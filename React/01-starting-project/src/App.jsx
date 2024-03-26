@@ -25,7 +25,8 @@ function App() {
   }
 
   return (
-    <div>
+    // can use <Fragment> from 'react' or <></> to wrap sibling nodes
+    <>
       <Header />
       <main>
         <section id='core-concepts'>
@@ -67,7 +68,7 @@ function App() {
           {tabContent}
         </section>
       </main>
-    </div>
+    </>
   );
 }
 
