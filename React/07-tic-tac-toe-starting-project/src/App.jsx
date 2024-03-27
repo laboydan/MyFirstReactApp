@@ -20,8 +20,6 @@ function App() {
   const activePlayer = deriveActivePlayer(gameTurns);
 
   function handleSelectSquare(rowIndex, colIndex) {
-    // update active player
-    setActivePlayer((curActivePlayer) => (curActivePlayer === 'X' ? 'O' : 'X'));
     // update game log
     setGameTurns((prevTurns) => {
       const currentPlayer = deriveActivePlayer(prevTurns);
