@@ -8,9 +8,17 @@ import Player from './components/Player.jsx';
 import { WINNING_COMBINATIONS } from './winning-combinations.js';
 
 /**
+ * Default player names
+ */
+const PLAYERS = {
+  X: 'Player 1',
+  O: 'Player 2',
+};
+
+/**
  * Initial game board state (3x3)
  */
-const initialGameBoard = [
+const INITIAL_GAME_BOARD = [
   [null, null, null],
   [null, null, null],
   [null, null, null],
@@ -20,7 +28,7 @@ const initialGameBoard = [
  * Calculates current active player based on current game log. Player 1 (X)
  * always goes first.
  *
- * @param {Array<String>[]} gameTurns Current game log
+ * @param {string[]} gameTurns Current game log
  * @returns Current active player symbol - X or O
  */
 function deriveActivePlayer(gameTurns) {
@@ -33,18 +41,15 @@ function deriveActivePlayer(gameTurns) {
   return activePlayer;
 }
 
-function App() {
-  const [players, setPlayers] = useState({
-    X: 'Player 1',
-    O: 'Player 2',
-  });
-  const [gameTurns, setGameTurns] = useState([]);
+/**
+ * Calculates current state of game board based on current game log.
+ *
+ * @param {string[]} gameTurns Current game log
+ * @returns Current state of game board
+ */
+function deriveGameBoard(gameTurns) {
+  let gameBoard = [...INITIAL_GAME_BOARD.map((row) => [...row])];
 
-  // Calculate active player
-  const activePlayer = deriveActivePlayer(gameTurns);
-
-  // Calculate current game board
-  let gameBoard = [...initialGameBoard.map((row) => [...row])];
   for (const turn of gameTurns) {
     const { square, player } = turn;
     const { row, col } = square;
@@ -52,8 +57,20 @@ function App() {
     gameBoard[row][col] = player;
   }
 
-  // Check for winner (Game Over)
+  return gameBoard;
+}
+
+/**
+ * Calculates if a winning combination has been reached on game board. Returns
+ * the name of the winner, if found, or otherwise null.
+ *
+ * @param {string[][]} gameBoard Current game board state
+ * @param {object} players Names of current players
+ * @returns Name of winning player or null
+ */
+function deriveWinner(gameBoard, players) {
   let winner;
+
   for (const combination of WINNING_COMBINATIONS) {
     const firstSquareSymbol =
       gameBoard[combination[0].row][combination[0].column];
@@ -71,6 +88,24 @@ function App() {
     }
   }
 
+  return winner;
+}
+
+/**
+ * Main application function.
+ *
+ * @returns Renderable game board page
+ */
+function App() {
+  const [players, setPlayers] = useState(PLAYERS);
+  const [gameTurns, setGameTurns] = useState([]);
+
+  // Calculate active player
+  const activePlayer = deriveActivePlayer(gameTurns);
+  // Calculate current game board
+  const gameBoard = deriveGameBoard(gameTurns);
+  // Check for winner (Game Over)
+  const winner = deriveWinner(gameBoard, players);
   // Check for draw (Game Over)
   const hasDraw = gameTurns.length === 9 && !winner;
 
@@ -118,13 +153,13 @@ function App() {
       <div id='game-container'>
         <ol id='players' className='highlight-player'>
           <Player
-            initialName='Player 1'
+            initialName={PLAYERS.X}
             symbol='X'
             isActive={activePlayer === 'X'}
             onChangeName={handlePlayerNameChange}
           />
           <Player
-            initialName='Player 2'
+            initialName={PLAYERS.O}
             symbol='O'
             isActive={activePlayer === 'O'}
             onChangeName={handlePlayerNameChange}
