@@ -50,17 +50,31 @@ function App() {
     });
   }
 
+  function handleDeleteProject() {
+    setProjectsState((prevState) => {
+      return {
+        ...prevState,
+        selectedProjectId: undefined,
+        projects: prevState.projects.filter(
+          (project) => project.id !== prevState.selectedProjectId
+        ),
+      };
+    });
+  }
+
   const selectedProject = projectsState.projects.find(
     (project) => project.id === projectsState.selectedProjectId
   );
-  let projectContent = <SelectedProject project={selectedProject} />;
+  let projectDisplayContent = (
+    <SelectedProject project={selectedProject} onDelete={handleDeleteProject} />
+  );
 
   if (projectsState.selectedProjectId === null) {
-    projectContent = (
+    projectDisplayContent = (
       <NewProject onAdd={handleAddProject} onCancel={handleCancelAddProject} />
     );
   } else if (projectsState.selectedProjectId === undefined) {
-    projectContent = (
+    projectDisplayContent = (
       <NoProjectSelected onStartAddProject={handleStartAddProject} />
     );
   }
@@ -72,7 +86,7 @@ function App() {
         projects={projectsState.projects}
         onSelectProject={handleSelectProject}
       />
-      {projectContent}
+      {projectDisplayContent}
     </main>
   );
 }
